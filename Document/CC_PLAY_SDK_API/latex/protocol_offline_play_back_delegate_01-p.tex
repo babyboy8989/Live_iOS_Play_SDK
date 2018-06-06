@@ -1,0 +1,36 @@
+\hypertarget{protocol_offline_play_back_delegate_01-p}{}\section{$<$Offline\+Play\+Back\+Delegate $>$协议 参考}
+\label{protocol_offline_play_back_delegate_01-p}\index{$<$\+Offline\+Play\+Back\+Delegate $>$@{$<$\+Offline\+Play\+Back\+Delegate $>$}}
+类 $<$Offline\+Play\+Back\+Delegate $>$ 继承关系图\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{protocol_offline_play_back_delegate_01-p}
+\end{center}
+\end{figure}
+\subsection*{构造函数}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{protocol_offline_play_back_delegate_01-p_a1ee776037831d9c6f44a635f19be821a}\label{protocol_offline_play_back_delegate_01-p_a1ee776037831d9c6f44a635f19be821a}} 
+(void) -\/ \hyperlink{protocol_offline_play_back_delegate_01-p_a1ee776037831d9c6f44a635f19be821a}{offline\+\_\+get\+Doc\+Aspect\+Ratio\+Of\+Width\+:height\+:}
+\begin{DoxyCompactList}\small\item\em 获取文档内白板或者文档本身的宽高，来进行屏幕适配用的 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{protocol_offline_play_back_delegate_01-p_a4a95cda1929dc7cb1ed2b248a7542d38}\label{protocol_offline_play_back_delegate_01-p_a4a95cda1929dc7cb1ed2b248a7542d38}} 
+(void) -\/ \hyperlink{protocol_offline_play_back_delegate_01-p_a4a95cda1929dc7cb1ed2b248a7542d38}{offline\+\_\+on\+Parser\+Question\+Arr\+:on\+Parser\+Answer\+Arr\+:}
+\begin{DoxyCompactList}\small\item\em 收到本房间的历史提问\&回答 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{protocol_offline_play_back_delegate_01-p_abb9d5988a67cf4cdc583d1782709146f}\label{protocol_offline_play_back_delegate_01-p_abb9d5988a67cf4cdc583d1782709146f}} 
+(void) -\/ \hyperlink{protocol_offline_play_back_delegate_01-p_abb9d5988a67cf4cdc583d1782709146f}{offline\+\_\+on\+Parser\+Chat\+:}
+\begin{DoxyCompactList}\small\item\em 解析本房间的历史聊天数据 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{protocol_offline_play_back_delegate_01-p_a89a33f4e08be57b1019c80f508bf2bb0}\label{protocol_offline_play_back_delegate_01-p_a89a33f4e08be57b1019c80f508bf2bb0}} 
+(void) -\/ \hyperlink{protocol_offline_play_back_delegate_01-p_a89a33f4e08be57b1019c80f508bf2bb0}{offline\+\_\+room\+Info\+:}
+\begin{DoxyCompactList}\small\item\em 获取房间信息，主要是要获取直播间模版来类型，根据直播间模版类型来确定界面布局 房间简介：dic\mbox{[}"desc\char`\"{}\mbox{]};
+房间名称：dic\mbox{[}@\char`\"{}name\char`\"{}\mbox{]};
+房间模版类型：\mbox{[}dic\mbox{[}@\char`\"{}template\+Type"\mbox{]} integer\+Value\mbox{]}; 模版类型为1\+: 聊天互动： 无 直播文档： 无 直播问答： 无 模版类型为2\+: 聊天互动： 有 直播文档： 无 直播问答： 有 模版类型为3\+: 聊天互动： 有 直播文档： 无 直播问答： 无 模版类型为4\+: 聊天互动： 有 直播文档： 有 直播问答： 无 模版类型为5\+: 聊天互动： 有 直播文档： 有 直播问答： 有 模版类型为6\+: 聊天互动： 无 直播文档： 无 直播问答： 有 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{protocol_offline_play_back_delegate_01-p_aa08d85a0bcfdc600d09e4cc676df9131}\label{protocol_offline_play_back_delegate_01-p_aa08d85a0bcfdc600d09e4cc676df9131}} 
+(void) -\/ \hyperlink{protocol_offline_play_back_delegate_01-p_aa08d85a0bcfdc600d09e4cc676df9131}{offline\+\_\+load\+Video\+Fail}
+\begin{DoxyCompactList}\small\item\em 加载视频失败 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{protocol_offline_play_back_delegate_01-p_acb8b76f265c8e351998a10898ce68c6f}\label{protocol_offline_play_back_delegate_01-p_acb8b76f265c8e351998a10898ce68c6f}} 
+(void) -\/ \hyperlink{protocol_offline_play_back_delegate_01-p_acb8b76f265c8e351998a10898ce68c6f}{page\+Change\+List\+:}
+\begin{DoxyCompactList}\small\item\em 回放翻页数据列表 \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+该协议的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+Offline\+Play\+Back.\+h\end{DoxyCompactItemize}

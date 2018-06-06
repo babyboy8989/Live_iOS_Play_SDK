@@ -1,0 +1,99 @@
+\hypertarget{interface_offline_play_back}{}\section{Offline\+Play\+Back类 参考}
+\label{interface_offline_play_back}\index{Offline\+Play\+Back@{Offline\+Play\+Back}}
+类 Offline\+Play\+Back 继承关系图\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{interface_offline_play_back}
+\end{center}
+\end{figure}
+\subsection*{构造函数}
+\begin{DoxyCompactItemize}
+\item 
+(id) -\/ \hyperlink{interface_offline_play_back_af03e324fc6ecf88ef231c945de5b1a5c}{init\+With\+Parameter\+:}
+\begin{DoxyCompactList}\small\item\em 初始化 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a066a30821438528546ac1f4ed205975d}\label{interface_offline_play_back_a066a30821438528546ac1f4ed205975d}} 
+(void) -\/ \hyperlink{interface_offline_play_back_a066a30821438528546ac1f4ed205975d}{start\+Play\+And\+Decompress}
+\begin{DoxyCompactList}\small\item\em 开始解析数据并播放视频 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a7b71e7e41545db196953fe6bc3462b35}\label{interface_offline_play_back_a7b71e7e41545db196953fe6bc3462b35}} 
+(void) -\/ \hyperlink{interface_offline_play_back_a7b71e7e41545db196953fe6bc3462b35}{request\+Cancel}
+\begin{DoxyCompactList}\small\item\em 销毁文档和视频，清除视频和文档的时候需要调用,推出播放页面的时候也需要调用 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a8078e7716f7c41146c094b6fd637c924}\label{interface_offline_play_back_a8078e7716f7c41146c094b6fd637c924}} 
+(void) -\/ \hyperlink{interface_offline_play_back_a8078e7716f7c41146c094b6fd637c924}{continue\+From\+The\+Time\+:}
+\begin{DoxyCompactList}\small\item\em time：从直播开始到现在的秒数，\+S\+D\+K会在画板上绘画出来相应的图形 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_aa9822fbb0c3958a1ac4cb9fd48cc5450}\label{interface_offline_play_back_aa9822fbb0c3958a1ac4cb9fd48cc5450}} 
+(C\+G\+Float) -\/ \hyperlink{interface_offline_play_back_aa9822fbb0c3958a1ac4cb9fd48cc5450}{get\+Doc\+Aspect\+Ratio}
+\begin{DoxyCompactList}\small\item\em 获取文档区域内白板或者文档本身的宽高比，返回值即为宽高比，做屏幕适配用 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a62d3c2f0558f3ce002251dd98e84dbcf}\label{interface_offline_play_back_a62d3c2f0558f3ce002251dd98e84dbcf}} 
+(void) -\/ \hyperlink{interface_offline_play_back_a62d3c2f0558f3ce002251dd98e84dbcf}{change\+Doc\+Frame\+:}
+\begin{DoxyCompactList}\small\item\em 改变文档区域大小,主要用在文档生成后改变文档窗口的frame \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_ac1c40aab1bea6b80a33292a0cfddf002}\label{interface_offline_play_back_ac1c40aab1bea6b80a33292a0cfddf002}} 
+(void) -\/ \hyperlink{interface_offline_play_back_ac1c40aab1bea6b80a33292a0cfddf002}{change\+Player\+Frame\+:}
+\begin{DoxyCompactList}\small\item\em 改变播放器frame \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_ae83e564798be358b00fb6b0e7172d0f8}\label{interface_offline_play_back_ae83e564798be358b00fb6b0e7172d0f8}} 
+(void) -\/ \hyperlink{interface_offline_play_back_ae83e564798be358b00fb6b0e7172d0f8}{change\+Player\+Parent\+:}
+\begin{DoxyCompactList}\small\item\em 改变播放器父窗口 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_ae90886ca0199a300d123b8dfee178a47}\label{interface_offline_play_back_ae90886ca0199a300d123b8dfee178a47}} 
+(void) -\/ \hyperlink{interface_offline_play_back_ae90886ca0199a300d123b8dfee178a47}{change\+Doc\+Parent\+:}
+\begin{DoxyCompactList}\small\item\em 改变文档父窗口 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_afe2a5924e708c918515133b9ded58789}\label{interface_offline_play_back_afe2a5924e708c918515133b9ded58789}} 
+(void) -\/ \hyperlink{interface_offline_play_back_afe2a5924e708c918515133b9ded58789}{pause\+Player}
+\begin{DoxyCompactList}\small\item\em 播放器暂停 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a96d5cf73bdffcd575a2e5100547e6e91}\label{interface_offline_play_back_a96d5cf73bdffcd575a2e5100547e6e91}} 
+(void) -\/ \hyperlink{interface_offline_play_back_a96d5cf73bdffcd575a2e5100547e6e91}{start\+Player}
+\begin{DoxyCompactList}\small\item\em 播放器播放 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_ae9a74cc8b04aec15c364fb2a61a2fee9}\label{interface_offline_play_back_ae9a74cc8b04aec15c364fb2a61a2fee9}} 
+(void) -\/ \hyperlink{interface_offline_play_back_ae9a74cc8b04aec15c364fb2a61a2fee9}{shutdown\+Player}
+\begin{DoxyCompactList}\small\item\em 播放器关闭并移除 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a7dde7a57cc513fb9ebb3e5e635e0eb9a}\label{interface_offline_play_back_a7dde7a57cc513fb9ebb3e5e635e0eb9a}} 
+(void) -\/ \hyperlink{interface_offline_play_back_a7dde7a57cc513fb9ebb3e5e635e0eb9a}{stop\+Player}
+\begin{DoxyCompactList}\small\item\em 播放器停止 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a048137f526fa9e1305441ebac3833cd7}\label{interface_offline_play_back_a048137f526fa9e1305441ebac3833cd7}} 
+(void) -\/ \hyperlink{interface_offline_play_back_a048137f526fa9e1305441ebac3833cd7}{replay\+Player}
+\begin{DoxyCompactList}\small\item\em 从头播放 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a86f033aa94f7532be970bea92076af31}\label{interface_offline_play_back_a86f033aa94f7532be970bea92076af31}} 
+(B\+O\+OL) -\/ \hyperlink{interface_offline_play_back_a86f033aa94f7532be970bea92076af31}{is\+Playing}
+\begin{DoxyCompactList}\small\item\em 播放器是否播放 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_ab19a16ddbca9ee34085ce5250aaf02ee}\label{interface_offline_play_back_ab19a16ddbca9ee34085ce5250aaf02ee}} 
+(N\+S\+Time\+Interval) -\/ \hyperlink{interface_offline_play_back_ab19a16ddbca9ee34085ce5250aaf02ee}{current\+Playback\+Time}
+\begin{DoxyCompactList}\small\item\em 播放器当前播放时间 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a5073e3c5fa97621523a5a6a3b8163238}\label{interface_offline_play_back_a5073e3c5fa97621523a5a6a3b8163238}} 
+(void) -\/ \hyperlink{interface_offline_play_back_a5073e3c5fa97621523a5a6a3b8163238}{set\+Current\+Playback\+Time\+:}
+\begin{DoxyCompactList}\small\item\em 设置播放器当前播放时间（用于拖拽进度条时掉用的） \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_acf85129c9552cbe05a4b925199385d32}\label{interface_offline_play_back_acf85129c9552cbe05a4b925199385d32}} 
+(N\+S\+Time\+Interval) -\/ \hyperlink{interface_offline_play_back_acf85129c9552cbe05a4b925199385d32}{player\+Duration}
+\begin{DoxyCompactList}\small\item\em 回放视频总时长 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_aecc8a54b8b74b3b34e28d9d341b4dac1}\label{interface_offline_play_back_aecc8a54b8b74b3b34e28d9d341b4dac1}} 
+(void) -\/ \hyperlink{interface_offline_play_back_aecc8a54b8b74b3b34e28d9d341b4dac1}{setpause\+In\+Back\+Ground\+:}
+\begin{DoxyCompactList}\small\item\em 设置后台是否可播放 \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{属性}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{interface_offline_play_back_a27b124ec76c47345b93524a6bfd321e2}\label{interface_offline_play_back_a27b124ec76c47345b93524a6bfd321e2}} 
+id$<$ Offline\+Play\+Back\+Delegate $>$ \hyperlink{interface_offline_play_back_a27b124ec76c47345b93524a6bfd321e2}{delegate}
+\begin{DoxyCompactList}\small\item\em 代理 \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{interface_offline_play_back_a67fb8ebdc8ff25d7fd9feeb028b4432b}\label{interface_offline_play_back_a67fb8ebdc8ff25d7fd9feeb028b4432b}} 
+id$<$ I\+J\+K\+Media\+Playback $>$ \hyperlink{interface_offline_play_back_a67fb8ebdc8ff25d7fd9feeb028b4432b}{ijk\+Player}
+\begin{DoxyCompactList}\small\item\em 播放器 \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{函数文档}
+\mbox{\Hypertarget{interface_offline_play_back_af03e324fc6ecf88ef231c945de5b1a5c}\label{interface_offline_play_back_af03e324fc6ecf88ef231c945de5b1a5c}} 
+\index{Offline\+Play\+Back@{Offline\+Play\+Back}!init\+With\+Parameter\+:@{init\+With\+Parameter\+:}}
+\index{init\+With\+Parameter\+:@{init\+With\+Parameter\+:}!Offline\+Play\+Back@{Offline\+Play\+Back}}
+\subsubsection{\texorpdfstring{init\+With\+Parameter\+:()}{initWithParameter:()}}
+{\footnotesize\ttfamily -\/ (id) init\+With\+Parameter\+: \begin{DoxyParamCaption}\item[{(\hyperlink{interface_play_parameter}{Play\+Parameter} $\ast$)}]{parameter }\end{DoxyParamCaption}}
+
+
+
+初始化 
+
+
+\begin{DoxyParams}{参数}
+{\em parameter} & 配置参数信息 必填参数 doc\+Frame; 必填参数 doc\+Parent; 必填参数 player\+Parent; 必填参数 player\+Frame; 必填参数 scaling\+Mode; 必填参数 destination; 必填参数 default\+Color; 必填参数 P\+P\+T\+Scaling\+Mode; 必填参数 pause\+In\+Back\+Ground; \\
+\hline
+\end{DoxyParams}
+
+
+该类的文档由以下文件生成\+:\begin{DoxyCompactItemize}
+\item 
+Offline\+Play\+Back.\+h\end{DoxyCompactItemize}
