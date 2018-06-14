@@ -19,6 +19,15 @@
  */
 - (void)getDocAspectRatioOfWidth:(CGFloat)width height:(CGFloat)height;
 /**
+ *  @brief  获取ppt当前页数和总页数(The new method)
+ *
+ *  回调当前翻页的页数信息 <br/>
+ *  白板docTotalPage一直为0, pageNum从1开始<br/>
+ *  其他文档docTotalPage为正常页数,pageNum从0开始<br/>
+ *  @param dictionary 翻页信息
+ */
+- (void)onPageChange:(NSDictionary *) dictionary;
+/**
  *	@brief	收到本房间的历史提问&回答
  */
 - (void)onParserQuestionArr:(NSArray *)questionArr onParserAnswerArr:(NSArray *)answerArr;
@@ -26,6 +35,12 @@
  *	@brief	解析本房间的历史聊天数据
  */
 -(void)onParserChat:(NSArray *)arr;
+/**
+ *  @brief  收到本房间历史广播(The new method)
+ *  content 广播内容
+ *  time 发布时间(单位:秒)
+ */
+- (void)broadcastHistory_msg:(NSArray *)array;
 /**
  *	@brief	请求回放地址成功
  */
@@ -55,12 +70,12 @@
  *	模版类型为6: 聊天互动： 无 直播文档： 无 直播问答： 有
  */
 -(void)roomInfo:(NSDictionary *)dic;
-/*
- *  加载视频失败
+/**
+ *  @brief  加载视频失败
  */
 - (void)playback_loadVideoFail;
-/*
- *  回放翻页数据列表
+/**
+ *  @brief  回放翻页数据列表
  */
 - (void)pageChangeList:(NSMutableArray *)array;
 
@@ -69,6 +84,9 @@
 @interface RequestDataPlayBack : NSObject
 
 @property (weak,nonatomic) id<RequestDataPlayBackDelegate>  delegate;
+/**
+ *  @brief  播放器
+ */
 @property (retain,    atomic) id<IJKMediaPlayback>          ijkPlayer;
 
 /**
@@ -156,16 +174,16 @@
  *	@brief  播放器是否播放
  */
 - (BOOL)isPlaying;
-/*
- *  @brief  播放器当前播放时间
+/**
+ *    @brief   播放器当前播放时间
  */
 - (NSTimeInterval)currentPlaybackTime;
-/*
- *  @brief  设置播放器当前播放时间（用于拖拽进度条时掉用的）
+/**
+ *    @brief   设置播放器当前播放时间（用于拖拽进度条时掉用的）
  */
 - (void)setCurrentPlaybackTime:(NSTimeInterval)time;
-/*
- *  @brief 回放视频总时长
+/**
+ *    @brief  回放视频总时长
  */
 - (NSTimeInterval)playerDuration;
 /**

@@ -55,6 +55,10 @@
  *	@brief	收到私聊信息
  */
 - (void)OnPrivateChat:(NSDictionary *)dic;
+/**
+ *    @brief    修改昵称(The new method)
+ */
+- (void)onChangeNickname:(NSString *)nickNime;
 /*
  *  @brief  收到自己的禁言消息，如果你被禁言了，你发出的消息只有你自己能看到，其他人看不到
  */
@@ -97,6 +101,15 @@
  */
 - (void)getDocAspectRatioOfWidth:(CGFloat)width height:(CGFloat)height;
 /**
+ *  @brief  获取ppt当前页数和总页数(The new method)
+ *
+ *  回调当前翻页的页数信息 <br/>
+ *  白板docTotalPage一直为0, pageNum从1开始<br/>
+ *  其他文档docTotalPage为正常页数,pageNum从0开始<br/>
+ *  @param dictionary 翻页信息
+ */
+- (void)onPageChange:(NSDictionary *) dictionary;
+/**
  *	@brief  登录成功
  */
 - (void)loginSucceedPlay;
@@ -104,84 +117,97 @@
  *	@brief  登录失败
  */
 -(void)loginFailed:(NSError *)error reason:(NSString *)reason;
-/*
+
+/**
  *  @brief 切换源，firRoadNum表示一共有几个源，secRoadKeyArray表示每
  *  个源的描述数组，具体参见demo，firRoadNum是下拉列表有面的tableviewcell
  *  的行数，secRoadKeyArray是左面的tableviewcell的描述信息数组
  */
 - (void)firRoad:(NSInteger)firRoadNum secRoadKeyArray:(NSArray *)secRoadKeyArray;
-/*
- *  自定义消息
+/**
+ *  @brief  自定义消息
  */
 - (void)customMessage:(NSString *)message;
-/*
- *  公告
+/**
+ *  @brief  公告
  */
 - (void)announcement:(NSString *)str;
-/*
- *  监听到有公告消息
+/**
+ *  @brief  监听到有公告消息
  */
 - (void)on_announcement:(NSDictionary *)dict;
-/*
- *  开始抽奖
+/**
+ *  @brief  开始抽奖
  */
 - (void)start_lottery;
-/*
- *  抽奖结果
+/**
+ *  @brief  抽奖结果
  */
 - (void)lottery_resultWithCode:(NSString *)code myself:(BOOL)myself winnerName:(NSString *)winnerName remainNum:(NSInteger)remainNum;
-/*
- *  退出抽奖
+/**
+ *  @brief  退出抽奖
  */
 - (void)stop_lottery;
-/*
- *  开始签到
+/**
+ *  @brief  开始签到
  */
 - (void)start_rollcall:(NSInteger)duration;
-/*
- *  开始答题
+/**
+ *  @brief  开始答题
  */
 - (void)start_vote:(NSInteger)count singleSelection:(BOOL)single;
-/*
- *  结束答题
+/**
+ *  @brief  结束答题
  */
 - (void)stop_vote;
-/*
- *  答题结果
+/**
+ *  @brief  答题结果
  */
 - (void)vote_result:(NSDictionary *)resultDic;
-/*
- *  加载视频失败
+/**
+ *  @brief  加载视频失败
  */
 - (void)play_loadVideoFail;
-/*
- *  接收到发送的广播
+/**
+ *  @brief  接收到发送的广播
  */
 - (void)broadcast_msg:(NSDictionary *)dic;
-/*
- *  发布问题的ID
+/**
+ *  @brief  接收到最后一条广播(直播中途进入,会返回最后一条广播)
+ */
+- (void)broadcastLast_msg:(NSArray *)array;
+/**
+ *  @brief  发布问题的ID
  */
 - (void)publish_question:(NSString *)publishId;
-/*
- *  发布问卷
+/**
+ *  @brief  发布问卷
  */
 - (void)questionnaire_publish;
-/*
- *  结束发布问卷
+/**
+ *  @brief  结束发布问卷
  */
 - (void)questionnaire_publish_stop;
-/*
- *  获取问卷详细内容
+/**
+ *  @brief  获取问卷详细内容
  */
 - (void)questionnaireDetailInformation:(NSDictionary *)detailDic;
-/*
- *  提交问卷结果（成功，失败）
+/**
+ *  @brief  提交问卷结果（成功，失败）
  */
 - (void)commitQuestionnaireResult:(BOOL)success;
-/*
- *  问卷功能
+/**
+ *  @brief  问卷功能
  */
 - (void)questionnaireWithTitle:(NSString *)title url:(NSString *)url;
+/**
+ *  @brief  收到最后一条广播(The new method)
+ *  content 广播内容
+ *  time 发布时间(单位:秒)
+ */
+- (void)broadcastHistory_msg:(NSArray *)History_msg;
+
+
 
 
 @end
@@ -190,6 +216,8 @@
 
 @property (weak,nonatomic) id<RequestDataDelegate>      delegate;
 @property (retain,    atomic) id<IJKMediaPlayback>      ijkPlayer;
+
+
 
 /**
  *	@brief	登录房间
@@ -286,21 +314,21 @@
  *  key表示该源对应的描述信息
  */
 - (void)switchToPlayUrlWithFirIndex:(NSInteger)firIndex key:(NSString *)key;
-/*
- * 重新加载视频,参数force表示是否强制重新加载视频，
+/**
+ *  @brief 重新加载视频,参数force表示是否强制重新加载视频，
  * 一般重新加载视频的时间间隔应该超过3秒，如果强制重新加载视频，时间间隔可以在3S之内
  */
 -(void)reloadVideo:(BOOL)force;
-/*
- *签到
+/**
+ *  @brief 签到
  */
 -(void)answer_rollcall;
-/*
- *答单选题
+/**
+ *  @brief 答单选题
  */
 -(void)reply_vote_single:(NSInteger)index;
-/*
- *答多选题
+/**
+ *  @brief 答多选题
  */
 -(void)reply_vote_multiple:(NSMutableArray *)indexArray;
 /**
@@ -311,14 +339,19 @@
  *	@brief  设置后台是否可播放
  */
 - (void)setpauseInBackGround:(BOOL)pauseInBackGround;
-/*
+/**
  *  @brief 提交问卷结果
  */
 -(void)commitQuestionnaire:(NSDictionary *)dic;
-/*
+/**
  *  @brief 主动请求问卷
  */
 -(void)getPublishingQuestionnaire;
+/**
+ *    @brief     修改昵称(The new method)
+ *    @param     nickName  修改后的昵称
+ */
+- (void)changeNickName:(NSString *)nickName;
 
 
 

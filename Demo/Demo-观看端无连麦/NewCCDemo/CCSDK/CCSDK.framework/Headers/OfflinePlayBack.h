@@ -39,12 +39,12 @@
  *	模版类型为6: 聊天互动： 无 直播文档： 无 直播问答： 有
  */
 -(void)offline_roomInfo:(NSDictionary *)dic;
-/*
- *  加载视频失败
+/**
+ *    @brief   加载视频失败
  */
 - (void)offline_loadVideoFail;
-/*
- *  回放翻页数据列表
+/**
+ *    @brief   回放翻页数据列表
  */
 - (void)pageChangeList:(NSMutableArray *)array;
 
@@ -69,7 +69,7 @@
  */
 - (id)initWithParameter:(PlayParameter *)parameter;
 
-/*
+/**
  *  @brief	开始解析数据并播放视频
  */
 -(void)startPlayAndDecompress;
@@ -128,15 +128,15 @@
  *	@brief  播放器是否播放
  */
 - (BOOL)isPlaying;
-/*
+/**
  *  @brief  播放器当前播放时间
  */
 - (NSTimeInterval)currentPlaybackTime;
-/*
+/**
  *  @brief  设置播放器当前播放时间（用于拖拽进度条时掉用的）
  */
 - (void)setCurrentPlaybackTime:(NSTimeInterval)time;
-/*
+/**
  *  @brief 回放视频总时长
  */
 - (NSTimeInterval)playerDuration;

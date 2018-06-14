@@ -6430,6 +6430,10 @@
             socket.on('external_questionnaire_publish', function (data) {
                socket_message('external_questionnaire_publish', data);
             });
+            //39 修改昵称
+            socket.on('change_nickname', function(data){
+               socket_message('change_nickname', data);
+            });
         }
 
         function socketIOConnectReplay(uri, spareUri, sessionId, platform, terminal, roomId) {

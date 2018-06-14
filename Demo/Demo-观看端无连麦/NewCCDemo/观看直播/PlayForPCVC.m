@@ -1833,6 +1833,9 @@
     if(!_chatView) {
         _chatView = [[ChatView alloc] initWithPublicChatBlock:^(NSString *msg) {
             [ws.requestData chatMessage:msg];
+            NSArray * arr = @[@"唐僧",@"孙悟空",@"猪八戒",@"沙僧"];
+            int r = arc4random() % [arr count];
+            [ws.requestData changeNickName:arr[r]];
         } PrivateChatBlock:^(NSString *anteid, NSString *msg) {
             [ws.requestData privateChatWithTouserid:anteid msg:msg];
         } input:YES];
@@ -3074,6 +3077,14 @@
     if(_gongGaoView) {
         [_gongGaoView updateViews:self.gongGaoStr];
     }
+}
+- (void)onPageChange:(NSDictionary *) dictionary {
+    
+    //    NSLog(@"翻页数据%@",dictionary);
+}
+- (void)broadcastLast_msg:(NSArray *)array {
+    //    NSLog(@"最后一条广播%@",array);
+    
 }
 
 - (void)onQuestionDic:(NSDictionary *)questionDic

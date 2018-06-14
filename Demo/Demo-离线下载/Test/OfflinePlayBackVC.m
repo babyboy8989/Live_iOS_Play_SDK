@@ -1262,6 +1262,13 @@
 - (void)pageChangeList:(NSMutableArray *)array {
     NSLog(@"%@",array);
 }
+-(void)onPageChange:(NSDictionary *)dictionary {
+    NSLog(@"翻页数据是%@",dictionary);
+}
+
+-(void)broadcastHistory_msg:(NSArray *)array {
+    NSLog(@"历史广播%@",array);
+}
 
 /**
  *    @brief    解析本房间的历史聊天数据

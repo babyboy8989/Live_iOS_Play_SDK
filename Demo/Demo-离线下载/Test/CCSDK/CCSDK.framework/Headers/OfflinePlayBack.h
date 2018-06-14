@@ -27,6 +27,15 @@
  */
 -(void)offline_onParserChat:(NSArray *)arr;
 /**
+ *  @brief  获取ppt当前页数和总页数(The new method)
+ *
+ *  回调当前翻页的页数信息 <br/>
+ *  白板docTotalPage一直为0, pageNum从1开始<br/>
+ *  其他文档docTotalPage为正常页数,pageNum从0开始<br/>
+ *  @param dictionary 翻页信息
+ */
+- (void)onPageChange:(NSDictionary *) dictionary;
+/**
  *	@brief  获取房间信息，主要是要获取直播间模版来类型，根据直播间模版类型来确定界面布局
  *	房间简介：dic[@"desc"];
  *	房间名称：dic[@"name"];
@@ -39,14 +48,20 @@
  *	模版类型为6: 聊天互动： 无 直播文档： 无 直播问答： 有
  */
 -(void)offline_roomInfo:(NSDictionary *)dic;
-/*
- *  加载视频失败
+/**
+ *    @brief   加载视频失败
  */
 - (void)offline_loadVideoFail;
-/*
- *  回放翻页数据列表
+/**
+ *    @brief   回放翻页数据列表
  */
 - (void)pageChangeList:(NSMutableArray *)array;
+/**
+ *  @brief  收到本房间历史广播(The new method)
+ *  content 广播内容
+ *  time 发布时间(单位:秒)
+ */
+- (void)broadcastHistory_msg:(NSArray *)array;
 
 @end
 
@@ -69,7 +84,7 @@
  */
 - (id)initWithParameter:(PlayParameter *)parameter;
 
-/*
+/**
  *  @brief	开始解析数据并播放视频
  */
 -(void)startPlayAndDecompress;
@@ -128,15 +143,15 @@
  *	@brief  播放器是否播放
  */
 - (BOOL)isPlaying;
-/*
+/**
  *  @brief  播放器当前播放时间
  */
 - (NSTimeInterval)currentPlaybackTime;
-/*
+/**
  *  @brief  设置播放器当前播放时间（用于拖拽进度条时掉用的）
  */
 - (void)setCurrentPlaybackTime:(NSTimeInterval)time;
-/*
+/**
  *  @brief 回放视频总时长
  */
 - (NSTimeInterval)playerDuration;
