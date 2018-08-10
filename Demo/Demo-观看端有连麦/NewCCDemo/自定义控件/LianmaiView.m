@@ -25,7 +25,6 @@
 @property (assign,nonatomic)AVAuthorizationStatus   videoPermission;
 @property (assign,nonatomic)AVAuthorizationStatus   audioPermission;
 @property (assign,nonatomic)BOOL                    isVideo;
-@property (assign,nonatomic)BOOL                    isInitializeComplete;
 
 @end
 
@@ -42,7 +41,6 @@
     self = [super init];
     if(self) {
         self.isVideo = isVideo;
-        self.isInitializeComplete = NO;
         self.needToRemoveLianMaiView = NO;
         self.backgroundColor = CCRGBAColor(0,0,0,0.6);
     }
@@ -54,7 +52,6 @@
 }
 
 -(void)connectWebRTCSuccess {
-    self.isInitializeComplete = YES;
     self.requestLianmaiBtn.hidden = YES;
     self.cancelLianmainBtn.hidden = YES;
     self.hungupLianmainBtn.hidden = NO;
@@ -72,10 +69,6 @@
 
 -(BOOL)isConnecting {
     return [_connectTimer isValid];
-}
-
--(BOOL)isGoingToConnecting {
-    return self.isInitializeComplete;
 }
 
 -(void)stopConnectTimer {
@@ -199,7 +192,6 @@
 
 -(void)initialState {
     [self stopConnectTimer];
-    self.isInitializeComplete = NO;
     self.requestLianmaiBtn.hidden = NO;
     self.cancelLianmainBtn.hidden = YES;
     self.hungupLianmainBtn.hidden = YES;
@@ -214,7 +206,6 @@
     self.requestLianmaiBtn.hidden = YES;
     self.cancelLianmainBtn.hidden = NO;
     self.hungupLianmainBtn.hidden = YES;
-    self.isInitializeComplete = YES;
     if(self.isVideo) {
         self.msgLabel.text = @"已申请与主播视频互动";
     } else {
@@ -319,7 +310,6 @@
 
 -(UILabel *)msgLabel {
     if(!_msgLabel) {
-        _isInitializeComplete = NO;
         _msgLabel = [UILabel new];
         if(_isVideo) {
             _msgLabel.text = @"与主播视频互动";
@@ -437,6 +427,11 @@
     if(self.audioPermission == AVAuthorizationStatusAuthorized) return;
     if ([UIDevice currentDevice].systemVersion.floatValue <= 10.0) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=com.cc.NewCCDemo&path=MICROPHONE"]];
+    
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+        
+        
+        
     }else{
         // iOS10 之后, 比较特殊, 只能跳转到设置界面 , UIApplicationOpenSettingsURLString这个只支持iOS8之后.
         NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];

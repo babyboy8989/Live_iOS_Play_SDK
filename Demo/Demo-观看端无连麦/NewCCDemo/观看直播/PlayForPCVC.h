@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface PlayForPCVC : UIViewController
-
--(instancetype)initWithLeftLabelText:(NSString *)leftLabelText ;
+-(instancetype)initWithLeftLabelText:(NSString *)leftLabelText;
 
 @end

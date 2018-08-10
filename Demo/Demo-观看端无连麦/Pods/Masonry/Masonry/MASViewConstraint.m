@@ -343,7 +343,6 @@ static char kInstalledConstraintsKey;
         self.installedView = self.firstViewAttribute.view.superview;
     }
 
-
     MASLayoutConstraint *existingConstraint = nil;
     if (self.updateExisting) {
         existingConstraint = [self layoutConstraintSimilarTo:layoutConstraint];

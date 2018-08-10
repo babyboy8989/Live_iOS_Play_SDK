@@ -40,8 +40,6 @@
 
 -(void)initialState;
 
--(BOOL)isGoingToConnecting ;
-
 -(instancetype)initWithVideo:(BOOL)isVideo;
 
 @end

@@ -1209,6 +1209,7 @@
         [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(removeInformationViewPop) userInfo:nil repeats:NO];
         return;
     }
+
     [self chatSendMessage];
     _chatTextField.text = nil;
     [_chatTextField resignFirstResponder];

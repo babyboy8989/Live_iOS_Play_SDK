@@ -101,8 +101,7 @@
 @property(nonatomic,copy)  NSString                 *gongGaoStr;
 @property(nonatomic,strong)UIView                   *videoView;
 @property(nonatomic,strong)UIImageView              *barImageView;
-@property(nonatomic,strong)UIButton                 *lianmaiVideoBtn;
-@property(nonatomic,strong)UIButton                 *lianmaiAudioBtn;
+@property(nonatomic,strong)UIButton                 *lianmaiBtn;
 @property(nonatomic,strong)UIButton                 *quanPingBtn;
 @property(nonatomic,strong)UIScrollView             *scrollView;
 @property(nonatomic,strong)UISegmentedControl       *segment;
@@ -148,6 +147,7 @@
 @property(nonatomic,copy  )NSString                 *roomUserCount;
 @property(nonatomic,strong)InformationShowView      *informationViewPop;
 @property(nonatomic,strong)UIView                   *smallVideoView;
+@property(nonatomic, assign)BOOL                    isDoubleTap;
 //#ifdef LIANMAI_WEBRTC
 @property(nonatomic,assign)BOOL                     isAudioVideo;//YES表示音视频连麦，NO表示音频连麦
 @property(strong,nonatomic)UIView                   *remoteView;
@@ -262,12 +262,14 @@
             [ws.voteView removeFromSuperview];
             ws.voteView = nil;
         } voteSingleBlock:^(NSInteger index) {
+//答单选题
             [ws.requestData reply_vote_single:index];
             ws.mySelectIndex = index;
             NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:ws selector:@selector(removeVoteView) userInfo:nil repeats:NO];
             [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
             [[NSRunLoop currentRunLoop] run];
         } voteMultipleBlock:^(NSMutableArray *indexArray) {
+//答多选题
             [ws.requestData reply_vote_multiple:indexArray];
             ws.mySelectIndexArray = [indexArray mutableCopy];
             NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:ws selector:@selector(removeVoteView) userInfo:nil repeats:NO];
@@ -428,7 +430,7 @@
         }
     });
 }
-
+    
 -(void)postMessage:(NSTimer *)timer {
     NSMutableDictionary *dic = [timer userInfo];
     NSNumber *num = dic[@"tag"];
@@ -469,6 +471,7 @@
             [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
             [[NSRunLoop currentRunLoop] run];
         } lotteryblock:^{
+//签到
             [ws.requestData answer_rollcall];
         } isScreenLandScape:self.isScreenLandScape];
     }
@@ -532,7 +535,7 @@
 
 -(LianmaiView *)lianMaiView {
     if(!_lianMaiView) {
-        _lianMaiView = [[LianmaiView alloc] initWithVideo:self.isAudioVideo];
+        _lianMaiView = [[LianmaiView alloc] init];
         _lianMaiView.delegate = self;
     }
     return _lianMaiView;
@@ -608,12 +611,8 @@
         } else {
             _lianMaiView.hidden = YES;
         }
-        if([_lianMaiView isConnecting] && _isAudioVideo == YES) {
-            _lianmaiVideoBtn.selected = YES;
-            _lianmaiAudioBtn.selected = NO;
-        } else if([_lianMaiView isConnecting] && _isAudioVideo == NO) {
-            _lianmaiVideoBtn.selected = NO;
-            _lianmaiAudioBtn.selected = YES;
+        if([_lianMaiView isConnecting]) {
+            _lianmaiBtn.selected = YES;
         }
         return YES;
     } else if(_yuanHuaBtn.hidden == NO) {
@@ -664,8 +663,10 @@
     
     
     if(self.soundVideoBtn.selected) {
+//切换音视频
         [_requestData switchToPlayUrlWithFirIndex:_currentRoadNum key:@""];
     } else {
+//切换清晰度
         [_requestData switchToPlayUrlWithFirIndex:_currentRoadNum key:[_secRoadKeyArray objectAtIndex:_currentSecRoadNum]];
     }
 }
@@ -686,6 +687,7 @@
     _currentSecRoadNum = 1;
     
     if(self.soundVideoBtn.selected) {
+//切换线路
         [_requestData switchToPlayUrlWithFirIndex:_currentRoadNum key:@""];
     } else {
         [_requestData switchToPlayUrlWithFirIndex:_currentRoadNum key:[_secRoadKeyArray objectAtIndex:_currentSecRoadNum]];
@@ -706,7 +708,7 @@
         return;
     }
     _currentSecRoadNum = 2;
-    
+//切换清晰度
     if(self.soundVideoBtn.selected) {
         [_requestData switchToPlayUrlWithFirIndex:_currentRoadNum key:@""];
     } else {
@@ -767,7 +769,6 @@
  *  获取问卷详细内容
  */
 - (void)questionnaireDetailInformation:(NSDictionary *)detailDic {
-    if(detailDic == nil) return;
     WS(ws)
     dispatch_async(dispatch_get_main_queue(), ^{
         ws.questionnaireSurvey = [[QuestionnaireSurvey alloc] initWithCloseBlock:^{
@@ -776,6 +777,7 @@
             [ws.questionnaireSurveyPopUp removeFromSuperview];
             ws.questionnaireSurveyPopUp = nil;
         } CommitBlock:^(NSDictionary *dic) {
+//提交问卷结果
             [ws.requestData commitQuestionnaire:dic];
         } questionnaireDic:detailDic isScreenLandScape:ws.isScreenLandScape];
         [APPDelegate.window addSubview:ws.questionnaireSurvey];
@@ -852,6 +854,9 @@
     CGFloat shadowViewY = segment.frame.origin.y + segment.frame.size.height - 4;
     switch(index){
         case 0: {
+//#ifdef LIANMAI_WEBRTC
+            _isAudioVideo = NO;
+//#endif
             [UIView animateWithDuration:0.25 animations:^{
                 ws.shadowView.frame = CGRectMake(0, shadowViewY, width0, 4);
             }];
@@ -859,6 +864,9 @@
             [ws.scrollView setContentOffset:CGPointMake(0, py)];
             break;
         case 1: {
+//#ifdef LIANMAI_WEBRTC
+            _isAudioVideo = NO;
+//#endif
             [UIView animateWithDuration:0.25 animations:^{
                 ws.shadowView.frame = CGRectMake(width0, shadowViewY, width1, 4);
             }];
@@ -866,6 +874,9 @@
             [ws.scrollView setContentOffset:CGPointMake(self.scrollView.frame.size.width, py)];
             break;
         case 2: {
+//#ifdef LIANMAI_WEBRTC
+            _isAudioVideo = NO;
+//#endif
             [UIView animateWithDuration:0.25 animations:^{
                 ws.shadowView.frame = CGRectMake(width0 + width1, shadowViewY, width2, 4);
             }];
@@ -873,6 +884,9 @@
             [ws.scrollView setContentOffset:CGPointMake(self.scrollView.frame.size.width * 2, py)];
             break;
         case 3: {
+//#ifdef LIANMAI_WEBRTC
+            _isAudioVideo = YES;
+//#endif
             [UIView animateWithDuration:0.25 animations:^{
                 ws.shadowView.frame = CGRectMake(width0 + width1 + width2, shadowViewY, width3, 4);
             }];
@@ -950,8 +964,7 @@
         _barImageView.hidden = YES;
         _contentView.hidden = YES;
         
-        _lianmaiVideoBtn.hidden = YES;
-        _lianmaiAudioBtn.hidden = YES;
+        _lianmaiBtn.hidden = YES;
         _selectRoadBtn.hidden = YES;
         
         _soundVideoBtn.hidden = YES;
@@ -985,8 +998,7 @@
     
     _daohangView.hidden = YES;
     _barImageView.hidden = YES;
-    _lianmaiVideoBtn.hidden = YES;
-    _lianmaiAudioBtn.hidden = YES;
+    _lianmaiBtn.hidden = YES;
     _selectRoadBtn.hidden = YES;
     _soundVideoBtn.hidden = YES;
     _mainRoad.hidden = YES;
@@ -1013,8 +1025,7 @@
     _hiddenTime = 5.0f;
     _daohangView.hidden = NO;
     _barImageView.hidden = NO;
-    _lianmaiVideoBtn.hidden = NO;
-    _lianmaiAudioBtn.hidden = NO;
+    _lianmaiBtn.hidden = NO;
     _selectRoadBtn.hidden = NO;
     _soundVideoBtn.hidden = NO;
     
@@ -1049,28 +1060,16 @@
     }
 }
 
--(UIButton *)lianmaiVideoBtn {
-    if(!_lianmaiVideoBtn) {
-        _lianmaiVideoBtn = [UIButton new];
-        _lianmaiVideoBtn.backgroundColor = CCClearColor;
-        [_lianmaiVideoBtn setImage:[UIImage imageNamed:@"video_ic_lianmai_nor"] forState:UIControlStateNormal];
-        [_lianmaiVideoBtn setImage:[UIImage imageNamed:@"video_ic_lianmai_hov"] forState:UIControlStateSelected];
-        _lianmaiVideoBtn.contentMode = UIViewContentModeScaleAspectFit;
-        [_lianmaiVideoBtn addTarget:self action:@selector(lianmaiVideoBtnClicked) forControlEvents:UIControlEventTouchUpInside];
+-(UIButton *)lianmaiBtn {
+    if(!_lianmaiBtn) {
+        _lianmaiBtn = [UIButton new];
+        _lianmaiBtn.backgroundColor = CCClearColor;
+        [_lianmaiBtn setImage:[UIImage imageNamed:@"video_ic_lianmai_nor"] forState:UIControlStateNormal];
+        [_lianmaiBtn setImage:[UIImage imageNamed:@"video_ic_lianmai_hov"] forState:UIControlStateSelected];
+        _lianmaiBtn.contentMode = UIViewContentModeScaleAspectFit;
+        [_lianmaiBtn addTarget:self action:@selector(lianmaiBtnClicked) forControlEvents:UIControlEventTouchUpInside];
     }
-    return _lianmaiVideoBtn;
-}
-
--(UIButton *)lianmaiAudioBtn {
-    if(!_lianmaiAudioBtn) {
-        _lianmaiAudioBtn = [UIButton new];
-        _lianmaiAudioBtn.backgroundColor = CCClearColor;
-        [_lianmaiAudioBtn setImage:[UIImage imageNamed:@"音频连麦nor"] forState:UIControlStateNormal];
-        [_lianmaiAudioBtn setImage:[UIImage imageNamed:@"音频连麦正在通话"] forState:UIControlStateSelected];
-        _lianmaiAudioBtn.contentMode = UIViewContentModeScaleAspectFit;
-        [_lianmaiAudioBtn addTarget:self action:@selector(lianmaiAudioBtnClicked) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return _lianmaiAudioBtn;
+    return _lianmaiBtn;
 }
 
 -(UIButton *)quanPingBtn {
@@ -1123,22 +1122,46 @@
             break;
         }
 }
+//强制转屏
+- (void)interfaceOrientation:(UIInterfaceOrientation)orientation
+{
+    if ([[UIDevice currentDevice] respondsToSelector:@selector(setOrientation:)]) {
+        SEL selector  = NSSelectorFromString(@"setOrientation:");
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:[UIDevice instanceMethodSignatureForSelector:selector]];
+        [invocation setSelector:selector];
+        [invocation setTarget:[UIDevice currentDevice]];
+        int val = orientation;
+        // 从2开始是因为0 1 两个参数已经被selector和target占用
+        [invocation setArgument:&val atIndex:2];
+        [invocation invoke];
+    }
+}
 
 -(void)dealPPTViewDoubleTap {
     if(_pptView == nil) return;
     WS(ws)
     [self.view endEditing:YES];
-    if (!self.isScreenLandScape) {
+    if (!self.isScreenLandScape) {//横屏
         self.isScreenLandScape = YES;
         self.autoRotate = YES;
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:UIDeviceOrientationLandscapeLeft] forKey:@"orientation"];
+        self.isDoubleTap = YES;
+//        [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:UIDeviceOrientationLandscapeLeft] forKey:@"orientation"];
+        [self interfaceOrientation:UIInterfaceOrientationLandscapeRight];
+        if (self.view.frame.size.width < self.view.frame.size.height) {
+            CGFloat isWidth = self.view.frame.size.height;
+            CGFloat isHeight = self.view.frame.size.width;
+            
+            self.view.frame = CGRectMake(0, 0, isWidth, isHeight);
+        }
         [UIApplication sharedApplication].statusBarHidden = YES;
         [_pptView removeFromSuperview];
         [self.view addSubview:_pptView];
+        NSLog(@"屏幕朝尺寸%@",NSStringFromCGRect(self.view.frame));
         [self.view bringSubviewToFront:_pptView];
         CGRect rect = self.view.frame;
         [UIView animateWithDuration:0.25f animations:^{
             [ws.pptView setFrame:rect];
+//改变文档区域大小,主要用在文档生成后改变文档窗口的frame
             [ws.requestData changeDocFrame:rect];
         } completion:^(BOOL finished) {
             
@@ -1153,10 +1176,11 @@
             [self.smallVideoView addGestureRecognizer:panGestureRecognizer];
             
             [APPDelegate.window addSubview:self.smallVideoView];
-            
+// 改变播放器父窗口
             [self.requestData.ijkPlayer.view removeFromSuperview];
             [self.requestData changePlayerParent:self.smallVideoView];
             [self.smallVideoView insertSubview:self.requestData.ijkPlayer.view atIndex:0];
+// 改变播放器frame
             [self.requestData changePlayerFrame:CGRectMake(0, 0, self.smallVideoView.frame.size.width, self.smallVideoView.frame.size.height)];
         }
 //#ifdef LIANMAI_WEBRTC
@@ -1164,27 +1188,41 @@
             [self.remoteView removeFromSuperview];
             [self.smallVideoView addSubview:self.remoteView];
             self.remoteView.frame = [self calculateRemoteVIdeoRect:CGRectMake(0, 0, self.smallVideoView.frame.size.width, self.smallVideoView.frame.size.height)];
+// 设置远程连麦窗口的大小，连麦成功后调用才生效，连麦不成功调用不生效
             [_requestData setRemoteVideoFrameA:self.remoteView.frame];
         }
 //#endif
-    } else {
+    } else {//竖屏
         self.isScreenLandScape = NO;
         self.autoRotate = YES;
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:UIDeviceOrientationPortrait] forKey:@"orientation"];
+        self.isDoubleTap = NO;
+
+//        [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:UIDeviceOrientationPortrait] forKey:@"orientation"];
+        [self interfaceOrientation:UIInterfaceOrientationPortrait];
+        if (self.view.frame.size.width > self.view.frame.size.height) {
+            CGFloat isWidth = self.view.frame.size.width;
+            CGFloat isHeight = self.view.frame.size.height;
+            
+            self.view.frame = CGRectMake(0, 0, isHeight, isWidth);
+        }
         [UIApplication sharedApplication].statusBarHidden = NO;
         [_pptView removeFromSuperview];
         [_scrollView addSubview:_pptView];
         CGRect rect = CGRectMake(0, 0, _scrollView.frame.size.width, _scrollView.frame.size.height);
+        NSLog(@"尺寸%@",NSStringFromCGRect(self.view.frame));
 
         [UIView animateWithDuration:0.25f animations:^{
             [ws.pptView setFrame:rect];
+// 改变文档区域大小,主要用在文档生成后改变文档窗口的frame
             [ws.requestData changeDocFrame:rect];
         } completion:^(BOOL finished) {
         }];
         if(_soundVideoBtn.selected == NO) {
+// 改变播放器父窗口
             [self.requestData.ijkPlayer.view removeFromSuperview];
             [self.requestData changePlayerParent:self.videoView];
             [self.videoView insertSubview:self.requestData.ijkPlayer.view atIndex:0];
+// 改变播放器frame
             [self.requestData changePlayerFrame:CGRectMake(0, 0, self.videoView.frame.size.width, self.videoView.frame.size.height)];
             
             [self.smallVideoView removeFromSuperview];
@@ -1195,6 +1233,7 @@
             [self.remoteView removeFromSuperview];
             [self.videoView addSubview:self.remoteView];
             self.remoteView.frame = [self calculateRemoteVIdeoRect:CGRectMake(0, 0, self.videoView.frame.size.width, self.videoView.frame.size.height)];
+// 设置远程连麦窗口的大小，连麦成功后调用才生效，连麦不成功调用不生效
             [_requestData setRemoteVideoFrameA:self.remoteView.frame];
         }
 //#endif
@@ -1214,6 +1253,7 @@
         self.autoRotate = YES;
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:UIDeviceOrientationLandscapeLeft] forKey:@"orientation"];
         [UIApplication sharedApplication].statusBarHidden = YES;
+// 改变播放器frame
         [_requestData changePlayerFrame:self.view.frame];
         [self.videoView setFrame:self.view.frame];
         
@@ -1271,24 +1311,24 @@
             make.bottom.mas_equalTo(ws.userCountLogo);
         }];
 
-        [_lianmaiVideoBtn mas_updateConstraints:^(MASConstraintMaker *make) {
+        [_soundVideoBtn mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.right.mas_equalTo(ws.videoView).offset(-CCGetRealFromPt(30));
+            make.top.mas_equalTo(ws.daohangView.mas_bottom).offset(CCGetRealFromPt(212));
+            make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70),CCGetRealFromPt(70)));
+        }];
+
+        [_lianmaiBtn mas_updateConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.videoView).offset(CCGetRealFromPt(30));
             make.top.mas_equalTo(ws.daohangView.mas_bottom).offset(CCGetRealFromPt(142));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70), CCGetRealFromPt(70)));
         }];
         
-        [_lianmaiAudioBtn mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(ws.lianmaiVideoBtn);
-            make.top.mas_equalTo(ws.lianmaiVideoBtn.mas_bottom).offset(CCGetRealFromPt(20));
-            make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70), CCGetRealFromPt(70)));
-        }];
-        
         [_selectRoadBtn mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(ws.lianmaiAudioBtn);
-            make.top.mas_equalTo(ws.lianmaiAudioBtn.mas_bottom).offset(CCGetRealFromPt(20));
+            make.left.mas_equalTo(ws.lianmaiBtn);
+            make.top.mas_equalTo(ws.lianmaiBtn.mas_bottom).offset(CCGetRealFromPt(56));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70),CCGetRealFromPt(70)));
         }];
-        
+
         [_mainRoad mas_updateConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.selectRoadBtn.mas_right).offset(CCGetRealFromPt(14));
             make.top.mas_equalTo(ws.selectRoadBtn);
@@ -1300,17 +1340,11 @@
             make.top.mas_equalTo(ws.mainRoad.mas_bottom);
             make.size.mas_equalTo(ws.mainRoad);
         }];
-        
+
         [_thirdRoad mas_updateConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.mainRoad);
             make.top.mas_equalTo(ws.secondRoad.mas_bottom);
             make.size.mas_equalTo(ws.mainRoad);
-        }];
-        
-        [_soundVideoBtn mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.right.mas_equalTo(ws.videoView).offset(-CCGetRealFromPt(30));
-            make.top.mas_equalTo(ws.daohangView.mas_bottom).offset(CCGetRealFromPt(212));
-            make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70),CCGetRealFromPt(70)));
         }];
         
         [_soundBg mas_updateConstraints:^(MASConstraintMaker *make) {
@@ -1350,6 +1384,7 @@
         self.autoRotate = YES;
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger:UIDeviceOrientationPortrait] forKey:@"orientation"];
         [UIApplication sharedApplication].statusBarHidden = NO;
+// 改变播放器frame
         [_requestData changePlayerFrame:_videoRect];
         [_videoView setFrame:_videoRect];
 
@@ -1412,21 +1447,15 @@
             make.width.mas_equalTo(300);
         }];
         
-        [_lianmaiVideoBtn mas_updateConstraints:^(MASConstraintMaker *make) {
+        [_lianmaiBtn mas_updateConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.videoView).offset(CCGetRealFromPt(28));
-            make.top.mas_equalTo(ws.daohangView.mas_bottom).offset(CCGetRealFromPt(30));
-            make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70), CCGetRealFromPt(70)));
-        }];
-        
-        [_lianmaiAudioBtn mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(ws.lianmaiVideoBtn);
-            make.top.mas_equalTo(ws.lianmaiVideoBtn.mas_bottom).offset(CCGetRealFromPt(20));
+            make.top.mas_equalTo(ws.daohangView.mas_bottom).offset(CCGetRealFromPt(68));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70), CCGetRealFromPt(70)));
         }];
         
         [_selectRoadBtn mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(ws.lianmaiAudioBtn);
-            make.top.mas_equalTo(ws.lianmaiAudioBtn.mas_bottom).offset(CCGetRealFromPt(20));
+            make.left.mas_equalTo(ws.lianmaiBtn);
+            make.top.mas_equalTo(ws.lianmaiBtn.mas_bottom).offset(CCGetRealFromPt(20));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70),CCGetRealFromPt(70)));
         }];
         
@@ -1501,6 +1530,7 @@
 //#ifdef LIANMAI_WEBRTC
     if(_remoteView) {
         self.remoteView.frame = [self calculateRemoteVIdeoRect:self.videoView.frame];
+// 设置远程连麦窗口的大小，连麦成功后调用才生效，连麦不成功调用不生效
         [_requestData setRemoteVideoFrameA:self.remoteView.frame];
     }
 //#endif
@@ -1510,32 +1540,6 @@
 -(void)removeInformationViewPop {
     [_informationViewPop removeFromSuperview];
     _informationViewPop = nil;
-}
-
--(void)lianmaiVideoBtnClicked {
-    if([_lianMaiView isGoingToConnecting] && _isAudioVideo == NO) {
-        return;
-    } else if (_lianMaiView && _isAudioVideo == NO) {
-        [_lianMaiView removeFromSuperview];
-        _lianMaiView = nil;
-    }
-    
-    self.isAudioVideo = YES;
-    
-    [self lianmaiBtnClicked];
-}
-
--(void)lianmaiAudioBtnClicked {
-    if([_lianMaiView isGoingToConnecting] && _isAudioVideo == YES) {
-        return;
-    } else if (_lianMaiView && _isAudioVideo == YES) {
-        [_lianMaiView removeFromSuperview];
-        _lianMaiView = nil;
-    }
-    
-    self.isAudioVideo = NO;
-    
-    [self lianmaiBtnClicked];
 }
 
 -(void)lianmaiBtnClicked {
@@ -1583,13 +1587,9 @@
     } else {
         BOOL hidden = self.lianMaiView.hidden;
         self.lianMaiView.hidden = !hidden;
-
-        if([_lianMaiView isConnecting] && _isAudioVideo == YES) {
-            _lianmaiVideoBtn.selected = _lianMaiView.hidden;
-            _lianmaiAudioBtn.selected = NO;
-        } else if([_lianMaiView isConnecting] && _isAudioVideo == NO) {
-            _lianmaiVideoBtn.selected = NO;
-            _lianmaiAudioBtn.selected = _lianMaiView.hidden;
+        
+        if([_lianMaiView isConnecting]) {
+            _lianmaiBtn.selected = _lianMaiView.hidden;
         }
     }
 }
@@ -1618,16 +1618,17 @@
 //#endif
     if(!self.isScreenLandScape) {
         WS(ws)
+        //直播
         [self.view addSubview:self.videoView];
         _videoRect = CGRectMake(0, 0, self.view.frame.size.width, CCGetRealFromPt(462));
         [self.videoView setFrame:_videoRect];
-        
+        //导航
         [self.videoView addSubview:self.daohangView];
         [_daohangView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.and.left.and.right.mas_equalTo(ws.view);
             make.height.mas_equalTo(CCGetRealFromPt(108));
         }];
-        
+        //返回按钮
         [self.daohangView addSubview:self.leftButton];
         [_leftButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.daohangView).offset(10);
@@ -1641,14 +1642,14 @@
             make.centerY.mas_equalTo(ws.leftButton);
             make.size.mas_equalTo(CGSizeMake(ws.view.frame.size.width * 0.5, CCGetRealFromPt(30)));
         }];
-        
+        //公告
         [self.daohangView addSubview:self.gongGaoBtn];
         [_gongGaoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(ws.daohangView).offset(-CCGetRealFromPt(35));
             make.bottom.mas_equalTo(ws.leftLabel.mas_bottom);
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(67), CCGetRealFromPt(38)));
         }];
-        
+        //清晰度
         [self.daohangView addSubview:self.qingXiDuBtn];
         [_qingXiDuBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(ws.gongGaoBtn.mas_left).offset(-CCGetRealFromPt(52));
@@ -1656,7 +1657,7 @@
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(86), CCGetRealFromPt(28)));
         }];
         self.qingXiDuBtn.hidden = YES;
-        
+        //直播中图片
         [self.videoView addSubview:self.zhibozhongImage];
         [_zhibozhongImage mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(ws.daohangView).mas_offset(-CCGetRealFromPt(30));
@@ -1665,7 +1666,7 @@
         }];
         self.newGongGao = NO;
         self.zhibozhongImage.hidden = YES;
-        
+        //原画
         [self.videoView addSubview:self.yuanHuaBtn];
         [_yuanHuaBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(ws.qingXiDuBtn);
@@ -1674,7 +1675,7 @@
         }];
         _yuanHuaBtn.selected = YES;
         self.yuanHuaBtn.hidden = YES;
-        
+        //清晰
         [self.videoView addSubview:self.qingXiBtn];
         [_qingXiBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(ws.yuanHuaBtn);
@@ -1682,7 +1683,7 @@
             make.size.mas_equalTo(ws.yuanHuaBtn);
         }];
         self.qingXiBtn.hidden = YES;
-        
+        //流畅
         [self.videoView addSubview:self.liuChangBtn];
         [_liuChangBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.centerX.mas_equalTo(ws.qingXiBtn);
@@ -1696,14 +1697,14 @@
             make.right.and.bottom.and.left.mas_equalTo(ws.videoView);
             make.height.mas_equalTo(CCGetRealFromPt(60));
         }];
-        
+        //用户人数图片
         [self.barImageView addSubview:self.userCountLogo];
         [_userCountLogo mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.barImageView).offset(CCGetRealFromPt(30));
             make.bottom.mas_equalTo(ws.barImageView).offset(-CCGetRealFromPt(12));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(36), CCGetRealFromPt(36)));
         }];
-        
+        //用户人数
         [self.barImageView addSubview:self.userCountLabel];
         [_userCountLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.userCountLogo.mas_right).offset(CCGetRealFromPt(6));
@@ -1711,31 +1712,21 @@
             make.height.mas_equalTo(ws.userCountLogo);
             make.width.mas_equalTo(300);
         }];
-        //视频连麦按钮
-        [self.videoView addSubview:self.lianmaiVideoBtn];
-        [_lianmaiVideoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+        //连麦按钮
+        [self.videoView addSubview:self.lianmaiBtn];
+        [_lianmaiBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.videoView).offset(CCGetRealFromPt(28));
-            make.top.mas_equalTo(ws.daohangView.mas_bottom).offset(CCGetRealFromPt(30));
+            make.top.mas_equalTo(ws.daohangView.mas_bottom).offset(CCGetRealFromPt(68));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70), CCGetRealFromPt(70)));
         }];
-        
-        //音频连麦按钮
-        [self.videoView addSubview:self.lianmaiAudioBtn];
-        [_lianmaiAudioBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(ws.lianmaiVideoBtn);
-            make.top.mas_equalTo(ws.lianmaiVideoBtn.mas_bottom).offset(CCGetRealFromPt(20));
-            make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70), CCGetRealFromPt(70)));
-        }];
-        
         //线路选择
         [self.videoView addSubview:self.selectRoadBtn];
         [_selectRoadBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.left.mas_equalTo(ws.lianmaiAudioBtn);
-            make.top.mas_equalTo(ws.lianmaiAudioBtn.mas_bottom).offset(CCGetRealFromPt(20));
+            make.left.mas_equalTo(ws.lianmaiBtn);
+            make.top.mas_equalTo(ws.lianmaiBtn.mas_bottom).offset(CCGetRealFromPt(20));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70),CCGetRealFromPt(70)));
         }];
-        
-        //音频模式
+        //声频按钮
         [self.videoView addSubview:self.soundVideoBtn];
         [_soundVideoBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(ws.videoView).offset(-CCGetRealFromPt(28));
@@ -1759,7 +1750,7 @@
             make.centerY.mas_equalTo(ws.mainRoad);
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(31), CCGetRealFromPt(22)));
         }];
-        //第二线路
+        //备用线路一
         [self.videoView addSubview:self.secondRoad];
         [_secondRoad mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.mainRoad);
@@ -1778,7 +1769,7 @@
         }];
         imageRight2.hidden = YES;
         _secondRoad.hidden = YES;
-        //第三线路
+        //备用线路二
         [self.videoView addSubview:self.thirdRoad];
         [_thirdRoad mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.mas_equalTo(ws.mainRoad);
@@ -1797,28 +1788,28 @@
         }];
         imageRight3.hidden = YES;
         _thirdRoad.hidden = YES;
-        //弹幕隐藏
+        //弹幕开关
         [self.videoView addSubview:self.hideDanMuBtn];
         [_hideDanMuBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(ws.soundVideoBtn);
             make.top.mas_equalTo(ws.soundVideoBtn.mas_bottom).offset(CCGetRealFromPt(20));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70),CCGetRealFromPt(70)));
         }];
-        //全屏按钮
+        //全屏
         [self.videoView addSubview:self.quanPingBtn];
         [_quanPingBtn mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.mas_equalTo(ws.hideDanMuBtn);
             make.top.mas_equalTo(ws.hideDanMuBtn.mas_bottom).offset(CCGetRealFromPt(20));
             make.size.mas_equalTo(CGSizeMake(CCGetRealFromPt(70),CCGetRealFromPt(70)));
         }];
-        
+        //声频背景
         [self.videoView addSubview:self.soundBg];
         [_soundBg mas_makeConstraints:^(MASConstraintMaker *make) {
             make.left.and.right.mas_equalTo(ws.videoView);
             make.top.mas_equalTo(ws.daohangView.mas_bottom).offset(CCGetRealFromPt(30));
             make.height.mas_equalTo(CCGetRealFromPt(220));
         }];
-        
+        //声音背景
         [self.videoView addSubview:self.soundLabel];
         [_soundLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.mas_equalTo(ws.soundBg.mas_bottom).offset(CCGetRealFromPt(20));
@@ -1867,6 +1858,7 @@
 
         [self.view addSubview:self.scrollView];
         
+        //ppt文档
         [_scrollView addSubview:self.pptView];
         self.pptView.frame = CGRectMake(0, 0, _scrollView.frame.size.width, _scrollView.frame.size.height);
 
@@ -1897,14 +1889,15 @@
         
         self.hideTextBoardTap1 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dealSingleInformationTap)];
         UITapGestureRecognizer *hideTextBoardTap2 = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(dealSingleInformationTap)];
+        //聊天
         [_scrollView addSubview:self.chatView];
         self.chatView.frame = CGRectMake(_scrollView.frame.size.width, 0, _scrollView.frame.size.width, _scrollView.frame.size.height);
         [_chatView addGestureRecognizer:self.hideTextBoardTap1];
-        
+        //问答
         [_scrollView addSubview:self.questionChatView];
         self.questionChatView.frame = CGRectMake(_scrollView.frame.size.width * 2, 0, _scrollView.frame.size.width, _scrollView.frame.size.height);
         [_questionChatView addGestureRecognizer:hideTextBoardTap2];
-        
+        //简介
         [_scrollView addSubview:self.introductionView];
         self.introductionView.frame = CGRectMake(_scrollView.frame.size.width * 3, 0, _scrollView.frame.size.width, _scrollView.frame.size.height);
         
@@ -1953,8 +1946,13 @@
     WS(ws)
     if(!_chatView) {
         _chatView = [[ChatView alloc] initWithPublicChatBlock:^(NSString *msg) {
+// 发送公聊信息
             [ws.requestData chatMessage:msg];
+            NSArray * arr = @[@"唐僧",@"孙悟空",@"猪八戒",@"沙僧"];
+            int r = arc4random() % [arr count];
+            [ws.requestData changeNickName:arr[r]];
         } PrivateChatBlock:^(NSString *anteid, NSString *msg) {
+// 发送私聊信息
             [ws.requestData privateChatWithTouserid:anteid msg:msg];
         } input:YES];
         _chatView.backgroundColor = CCRGBColor(250,250,250);
@@ -2002,6 +2000,7 @@
     return _danMuButton;
 }
 
+//弹幕开关
 -(void)hideDanMuBtnClicked {
     
     if([self hasViewOnTheScreen:NO]) return;
@@ -2013,6 +2012,7 @@
 //    NSLog(@"selected = %d",selected);
 }
 
+//退出直播
 -(void)sureBtnClicked {
 //    dispatch_async(dispatch_get_main_queue(), ^{
         [self hiddenAllBtns];
@@ -2020,6 +2020,7 @@
         [self stopTimer];
         [self stopHiddenTimer];
         [self stopDanMuTimer];
+// 销毁文档和视频，清除视频和文档的时候需要调用,推出播放页面的时候也需要调用
         [_requestData requestCancel];
         _requestData = nil;
         [_modelView removeFromSuperview];
@@ -2051,6 +2052,8 @@
 -(void)startTimer {
     [self stopTimer];
     _timer = [NSTimer scheduledTimerWithTimeInterval:3.0f target:self selector:@selector(timerfunc) userInfo:nil repeats:YES];
+//    [_requestData roomUserCount];
+
 }
 
 -(void)cancelBtnClicked {
@@ -2059,6 +2062,8 @@
 }
 
 - (void)timerfunc {
+// (已废弃)获取在线房间人数，当登录成功后即可调用此接口，登录不成功或者退出登录后就不可以调用了，如果要求实时性比较强的话，可以写一个定时器，不断调用此接口，几秒钟发一次就可以，然后在代理回调函数中，处理返回的数据
+    //最新注释:该接口默认最短响应时间为15秒,获取在线房间人数，当登录成功后即可调用此接口，登录不成功或者退出登录后就不可以调用了，如果要求实时性比较强的话，可以写一个定时器，不断调用此接口，然后在代理回调函数中，处理返回的数据
     [_requestData roomUserCount];
 }
 
@@ -2107,12 +2112,15 @@
     _currentSecRoadNum = 0;
     _isKeyBoardShow = NO;
     _isAllow = NO;
-    _autoRotate = NO;
+    _autoRotate = NO;   
     _roomUserCount = @"1";
-    
+    //页面
     [self initUI];
+    //通知
     [self addObserver];
+    //开启弹幕
     [self startDanMuTimer];
+    //清屏
     [self startHiddenTimer];
     
     _secondToEnd = 8.0f;
@@ -2134,8 +2142,8 @@
     parameter.PPTScalingMode = 2;
     parameter.defaultColor = [UIColor whiteColor];
     parameter.scalingMode = 1;
-    parameter.pauseInBackGround = NO;
-    parameter.viewerCustomua = @"viewercustomua";
+    parameter.viewerCustomua = @"viewerCustomua";
+    parameter.pauseInBackGround = YES;
     _requestData = [[RequestData alloc] initWithParameter:parameter];
     _requestData.delegate = self;
     
@@ -2147,8 +2155,73 @@
         make.edges.mas_equalTo(UIEdgeInsetsMake(50, 0, 0, 0));
     }];
     [_loadingView layoutIfNeeded];
+//    开启和监听 设备旋转的通知（不开启的话，设备方向一直是UIInterfaceOrientationUnknown）
+    if (![UIDevice currentDevice].generatesDeviceOrientationNotifications) {
+        [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    }
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(handleDeviceOrientationChange:)
+                                                name:UIDeviceOrientationDidChangeNotification object:nil];
+    
 }
-
+//设备方向改变的处理
+- (void)handleDeviceOrientationChange:(NSNotification *)notification{
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    switch (deviceOrientation) {
+        case UIDeviceOrientationFaceUp:
+            NSLog(@"屏幕朝上平躺%ld",(long)self.autoRotate);
+            break;
+        case UIDeviceOrientationFaceDown:
+            NSLog(@"屏幕朝下平躺%ld",(long)self.autoRotate);
+            break;
+        case UIDeviceOrientationUnknown:
+            NSLog(@"未知方向%ld",(long)self.autoRotate);
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            NSLog(@"屏幕向左横置,%ld",(long)self.autoRotate);
+            if (!self.autoRotate && !self.isDoubleTap) {
+                [self interfaceOrientation:UIInterfaceOrientationPortrait];
+            }
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            NSLog(@"屏幕向右橫置%ld",(long)self.autoRotate);
+            if (!self.autoRotate &&!self.isDoubleTap) {
+                [self interfaceOrientation:UIInterfaceOrientationPortrait];
+            }
+            break;
+        case UIDeviceOrientationPortrait:
+            NSLog(@"屏幕直立%ld",(long)self.autoRotate);
+            if (self.isDoubleTap) {
+                [self interfaceOrientation:UIInterfaceOrientationLandscapeRight];
+//                self.autoRotate = NO;
+//                return;
+            }
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            NSLog(@"屏幕直立，上下顛倒%ld",(long)self.autoRotate);
+            break;
+        default:
+            NSLog(@"无法辨识%ld",(long)self.autoRotate);
+            break;
+    }
+}
+//最后在dealloc中移除通知 和结束设备旋转的通知
+- (void)dealloc{
+    //...
+    [[NSNotificationCenter defaultCenter]removeObserver:self];
+    [[UIDevice currentDevice]endGeneratingDeviceOrientationNotifications];
+}
+- (void)onPageChange:(NSDictionary *) dictionary {
+    
+//    NSLog(@"翻页数据%@",dictionary);
+}
+- (void)broadcastLast_msg:(NSArray *)array {
+//    NSLog(@"最后一条广播%@",array);
+    
+}
+- (void)startTimeAndDurationLiveBroadcast:(NSDictionary *)dataDic {
+//    NSLog(@"开始时间%@",dataDic);
+}
+//点击公告
 - (void)dealSingleTap:(UITapGestureRecognizer *)tap {
     [self.view endEditing:YES];
     CGPoint point = [tap locationInView:self.view];
@@ -2527,9 +2600,8 @@
     if(str == nil || str.length == 0 || !_isScreenLandScape) {
         return;
     }
-    
+// 发送公聊信息
     [_requestData chatMessage:str];
-    
     _chatTextField.text = nil;
     [_chatTextField resignFirstResponder];
 }
@@ -2865,6 +2937,7 @@
     imageView1.hidden = NO;
     imageView2.hidden = YES;
     imageView3.hidden = YES;
+// 切换线路
     if(self.soundVideoBtn.selected) {
         [_requestData switchToPlayUrlWithFirIndex:_currentRoadNum key:@""];
     } else {
@@ -3004,7 +3077,7 @@
     
     BOOL selected = self.soundVideoBtn.selected;
     self.soundVideoBtn.selected = !selected;
-    
+//切换音视频
     if(self.soundVideoBtn.selected) {
         [_requestData switchToPlayUrlWithFirIndex:_currentRoadNum key:@""];
         self.soundBg.hidden = NO;
@@ -3357,6 +3430,9 @@
     }
     [self.chatView reloadPublicChatArray:self.publicChatArray];
 }
+- (void)onChangeNickname:(NSString *)nickNime {
+//    NSLog(@"修改后的昵称%@",nickNime);
+}
 
 - (void)onPublicChatMessage:(NSDictionary *)dic {
 //    NSLog(@"onPublicChatMessage = %@",dic);
@@ -3429,6 +3505,7 @@
     [self stopTimer];
     [self stopHiddenTimer];
     [self stopDanMuTimer];
+// 销毁文档和视频，清除视频和文档的时候需要调用,推出播放页面的时候也需要调用
     [_requestData requestCancel];
     _requestData = nil;
     
@@ -3443,6 +3520,7 @@
  *	@brief  收到踢出消息，停止推流并退出播放（被主播踢出）
  */
 - (void)onKickOut {
+// 播放器停止
     [_requestData stopPlayer];
     [self.view endEditing:YES];
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"警告" message:@"您已被管理员踢出！" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
@@ -3554,6 +3632,7 @@
  *	@param 	message 提问内容
  */
 - (void)question:(NSString *)message {
+//提问
     [_requestData question:message];
 }
 
@@ -3729,6 +3808,7 @@
 
 - (BOOL)shouldAutorotate{
     return self.autoRotate;
+//    return YES;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
@@ -3751,6 +3831,8 @@
     [self.chatView reloadPublicChatArray:self.publicChatArray];
 }
 
+#pragma mark - 连麦代理 三个
+
 //#ifdef LIANMAI_WEBRTC
 -(void)requestLianmaiBtnClicked {
     if(!_isAllow) {
@@ -3763,10 +3845,11 @@
         
         [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(removeInformationViewPop) userInfo:nil repeats:NO];
     } else {
+//将要连接WebRTC
         [_requestData gotoConnectWebRTC];
     }
 }
-
+// 观看端主动断开连麦时候需要调用的接口
 -(void)cancelLianmainBtnClicked {
     [_requestData disConnectSpeak];
     [self disconnectWithUI];
@@ -3778,8 +3861,7 @@
 }
 
 -(void)disconnectWithUI {
-    _lianmaiVideoBtn.selected = NO;
-    _lianmaiAudioBtn.selected = NO;
+    _lianmaiBtn.selected = NO;
     
     if(_lianMaiView && _lianMaiView.requestLianmaiBtn.hidden == YES && (_lianMaiView.cancelLianmainBtn.hidden == NO || _lianMaiView.hungupLianmainBtn.hidden == NO)) {
         [_lianMaiView initialState];
@@ -3802,12 +3884,8 @@
     [_lianMaiView connectWebRTCSuccess];
     self.soundBg.hidden = YES;
     self.soundLabel.hidden = YES;
-    if(_lianMaiView.hidden && _isAudioVideo == YES) {
-        _lianmaiVideoBtn.selected = YES;
-        _lianmaiAudioBtn.selected = NO;
-    } else if(_lianMaiView.hidden && _isAudioVideo == NO) {
-        _lianmaiVideoBtn.selected = NO;
-        _lianmaiAudioBtn.selected = YES;
+    if(_lianMaiView.hidden) {
+        _lianmaiBtn.selected = YES;
     }
 }
 
@@ -3824,6 +3902,12 @@
         } else {
             
         }
+/*
+ * 当观看端主动申请连麦时，需要调用这个接口，并把本地连麦预览窗口传给SDK，SDK会在这个view上
+ * 进行远程画面渲染
+ * param localView:本地预览窗口，传入本地view，连麦准备时间将会自动绘制预览画面在此view上
+ * param isAudioVideo:是否是音视频连麦，不是音视频即是纯音频连麦(YES表示音视频连麦，NO表示音频连麦)
+ */
         [_requestData requestAVMessageWithLocalView:nil isAudioVideo:_isAudioVideo];
     } else {
         [_lianMaiView hasNoNetWork];
@@ -3834,6 +3918,11 @@
     _videosizeStr = dict[@"videosize"];
     if(_isAudioVideo) {
         self.remoteView.frame = [self calculateRemoteVIdeoRect:self.videoView.frame];
+/*
+ * 当收到- (void)acceptSpeak:(NSDictionary *)dict;回调方法后，调用此方法
+ * dict 正是- (void)acceptSpeak:(NSDictionary *)dict;接收到的的参数
+ * remoteView 是远程连麦页面的view，需要自己设置并发给SDK，SDK将要在这个view上进行远程画面渲染
+ */
         [_requestData saveUserInfo:dict remoteView:self.remoteView];
     } else {
         [_requestData saveUserInfo:dict remoteView:nil];
@@ -3873,8 +3962,7 @@
     if(!_isAllow) {
         [_lianMaiView removeFromSuperview];
         _lianMaiView = nil;
-        _lianmaiVideoBtn.selected = NO;
-        _lianmaiAudioBtn.selected = NO;
+        _lianmaiBtn.selected = NO;
     }
 }
 

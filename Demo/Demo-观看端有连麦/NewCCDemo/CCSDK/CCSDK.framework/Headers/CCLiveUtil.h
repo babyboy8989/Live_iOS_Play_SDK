@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, ERROR_SYSTEM_TYPE) {
 
 # pragma mark - NSURL
 /**
- *  从 urlString 解析url参数到 NSDictionary
+ *  @brief  从 urlString 解析url参数到 NSDictionary
  *  如 https://123.com/a/b/c.txt?v1=k1&v2=k3&v3=k3 解析的结果为：
  *   {
  *       "v1":"k1，

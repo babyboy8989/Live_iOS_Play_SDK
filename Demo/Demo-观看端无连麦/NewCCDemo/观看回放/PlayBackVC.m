@@ -70,6 +70,7 @@
 
 @property(assign,nonatomic)int                      currentChatTime;
 @property(assign,nonatomic)int                      currentChatIndex;
+@property (assign, nonatomic)BOOL                   isSlider;
 
 @end
 
@@ -130,6 +131,7 @@
 
 - (void) durationSliderDone:(UISlider *)sender
 {
+    _isSlider = YES;
     UIImage *image2 = [UIImage imageNamed:@"return_btn_playplan_nor"];//图片模式，不设置的话会被压缩
     [_slider setThumbImage:image2 forState:UIControlStateNormal];//设置图片
     
@@ -154,7 +156,6 @@
 {
     self.hiddenTime = 5.0f;
     _suspendButton.selected = NO;
-
     int duration = (int)sender.value;
     _leftTimeLabel.text = [NSString stringWithFormat:@"%02d:%02d", duration / 60, duration % 60];
     _slider.value = duration;
@@ -227,16 +228,21 @@
             if(duration - position == 1 && (_sliderValue == position || _sliderValue == duration)) {
                 position = duration;
             }
-//            NSLog(@"---%f",_requestDataPlayBack.currentPlaybackTime);
+//            NSLog(@"判断时间%f==%f",_requestDataPlayBack.currentPlaybackTime,position);
             
             _slider.maximumValue = (int)duration;
             _rightTimeLabel.text = [NSString stringWithFormat:@"%02d:%02d", (int)(duration / 60), (int)(duration) % 60];
             
+//            NSLog(@"--走这里了%f=%f=%f=%ld",_requestDataPlayBack.currentPlaybackTime,position,_slider.value,_sliderValue);
             if(position == 0 && _sliderValue != 0) {
                 _requestDataPlayBack.currentPlaybackTime = _sliderValue;
                 position = _sliderValue;
                 _slider.value = _sliderValue;
             } else if(fabs(position - _slider.value) > 10) {
+//            } else if(_isSlider == YES) {
+
+//                NSLog(@"走这里了%f=%f=%f",_requestDataPlayBack.currentPlaybackTime,position,_slider.value);
+                _isSlider = NO;
                 _requestDataPlayBack.currentPlaybackTime = _slider.value;
                 position = _slider.value;
                 _sliderValue = _slider.value;
@@ -833,6 +839,7 @@
     [self.view setBackgroundColor:[UIColor whiteColor]];
     [self.navigationController setNavigationBarHidden:YES animated:NO];
     [self initUI];
+    _isSlider = NO;
     [self addObserver];
     [self startHiddenTimer];
     _autoRotate = NO;
@@ -852,7 +859,7 @@
     parameter.docFrame = self.pptView.frame;
     parameter.playerParent = self.videoView;
     parameter.playerFrame = _videoRect;
-    parameter.security = NO;
+    parameter.security = YES;
     parameter.PPTScalingMode = 2;
     parameter.pauseInBackGround = YES;
     parameter.defaultColor = [UIColor whiteColor];
@@ -1259,7 +1266,7 @@
 
 - (void)appWillEnterBackgroundNotification {
     UIApplication *app = [UIApplication sharedApplication];
-    UIBackgroundTaskIdentifier taskID;
+    UIBackgroundTaskIdentifier taskID = 0;
     taskID = [app beginBackgroundTaskWithExpirationHandler:^{
         [app endBackgroundTask:taskID];
     }];
@@ -1270,15 +1277,14 @@
 }
 
 - (void)pageChangeList:(NSMutableArray *)array {
-    NSLog(@"%@",array);
+//    NSLog(@"````%@",array);
 }
 - (void)onPageChange:(NSDictionary *)dictionary {
-    NSLog(@"回放页数%@",dictionary);
+//    NSLog(@"回放页数%@",dictionary);
 }
 - (void)broadcastHistory_msg:(NSArray *)array {
-    NSLog(@"历史广播%@",array);
+//    NSLog(@"历史广播%@",array);
 }
-
 /**
  *    @brief    解析本房间的历史聊天数据
  */
